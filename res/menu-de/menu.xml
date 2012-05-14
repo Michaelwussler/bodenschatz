@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:id="@+id/Gesamtfeld" android:title="Gesamtfeldstärke"></item>
+    <item android:id="@+id/vertikaleKomponente" android:title="vertikale Komponente"></item>
+    <item android:id="@+id/horizontaleKomponente" android:title="horizontaleKomponente"></item>
+    <item android:id="@+id/Winkel" android:title="Winkel"></item>
+    
+
+</menu>
