@@ -110,6 +110,7 @@ public class MessService extends Service implements LocationListener
 		winkel=Math.acos(magneticVertical/magneticStrength)*360/2/Math.PI;
 			
 		//Toast.makeText(getApplicationContext(), "Messung" , Toast.LENGTH_SHORT).show();
+		//((App)getApplication()).offlineAufnahmen.add(new Messpunkt(lastLocation,magneticVertical, magneticHorizontal));
 		((App)(getApplication())).magnetkarte.setPoint(lastLocation, magneticVertical, magneticHorizontal);
 		}
 		
@@ -137,7 +138,6 @@ public class MessService extends Service implements LocationListener
 		lastLocation.set(location);
 		geoMagneticField=new GeomagneticField((float)location.getLatitude(), (float)location.getLongitude(), (float)location.getAltitude(), System.currentTimeMillis());
 		positionUpdate=System.currentTimeMillis();
-		Log.d("Position",String.valueOf(location.getAccuracy()));
 	}
 		
 
@@ -154,6 +154,14 @@ public class MessService extends Service implements LocationListener
 	public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void onDestroy() {
+		// TODO Auto-generated method stub
+		locationManager.removeUpdates(this);
+		sensorManager.unregisterListener(sensorListener);
+		super.onDestroy();
 	}
 
 }

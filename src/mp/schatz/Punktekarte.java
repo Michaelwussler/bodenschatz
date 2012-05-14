@@ -6,8 +6,10 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ShapeDrawable;
 import android.location.Location;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -23,6 +25,7 @@ import com.google.android.maps.OverlayItem;
 public class Punktekarte extends ItemizedOverlay 
 {	public Activity activity;	
 	private App app;
+	private int zoomlevel;
 	public ArrayList<OverlayItem> mOverlays = new ArrayList<OverlayItem>();
 	
 	public Punktekarte(Drawable defaultMarker, Activity activity, App apparg) 
@@ -49,9 +52,14 @@ public class Punktekarte extends ItemizedOverlay
 			GeoPoint point = new GeoPoint((int)(n.latitude*100),(int)(n.longitude*100));
 			OverlayItem overlayitem = new OverlayItem(point,String.valueOf(n.magneticVertical),String.valueOf(n.magneticHorizontal));
 			Drawable drawable= activity.getResources().getDrawable(R.drawable.rot);
-			double resolution = (double)(100.00/mapView.getLatitudeSpan()*mapView.getWidth());
+			ShapeDrawable bunt=new ShapeDrawable();
+
+			double resolution = (double)(100.00/mapView.getLongitudeSpan()*mapView.getWidth());
+			double resolution2 = (double)(100.00/mapView.getLatitudeSpan()*mapView.getHeight());
 			//Log.d("Resolution",String.valueOf(resolution));
-			drawable.setBounds((int)(-resolution), (int)(-resolution), 0, 0);
+			drawable.setBounds((int)(-resolution), (int)(-resolution2), 0, 0);
+			bunt.setBounds((int)(-resolution), (int)(-resolution2), 0, 0);
+			bunt.getPaint().setColor(Color.BLUE);
 			if(typ==1)
 			{drawable.setAlpha(alphaBestimmen(Math.sqrt(Math.pow(n.magneticVertical,2)+Math.pow(n.magneticHorizontal,2)),helligkeit,kontrast));}
 			if(typ==2)
@@ -60,10 +68,20 @@ public class Punktekarte extends ItemizedOverlay
 			{drawable.setAlpha(alphaBestimmen(n.magneticHorizontal, helligkeit, kontrast));}
 			if(typ==4)
 			{drawable.setAlpha(alphaBestimmen(Math.acos(n.magneticVertical/Math.sqrt(Math.pow(n.magneticVertical,2)+Math.pow(n.magneticHorizontal,2))),helligkeit,kontrast));}
-			//drawable.setBounds(-100, -100, 100, 100);
-			//drawable.setAlpha(255);
-			overlayitem.setMarker(drawable);
+
+			if(typ==1)
+			{bunt.setAlpha(alphaBestimmen(Math.sqrt(Math.pow(n.magneticVertical,2)+Math.pow(n.magneticHorizontal,2)),helligkeit,kontrast));}
+			if(typ==2)
+			{bunt.setAlpha(alphaBestimmen(n.magneticVertical, helligkeit, kontrast));}
+			if(typ==3)
+			{bunt.setAlpha(alphaBestimmen(n.magneticHorizontal, helligkeit, kontrast));}
+			if(typ==4)
+			{bunt.setAlpha(alphaBestimmen(Math.acos(n.magneticVertical/Math.sqrt(Math.pow(n.magneticVertical,2)+Math.pow(n.magneticHorizontal,2))),helligkeit,kontrast));}
+
+			//overlayitem.setMarker(drawable);
+			overlayitem.setMarker(bunt);
 			mOverlays.add(overlayitem);
+			mapView.invalidate();
 
 
 		}
@@ -72,7 +90,7 @@ public class Punktekarte extends ItemizedOverlay
 			}
 		else{Log.d("Zeichnen","noch kein Wert");}
 		populate();	
-		Toast.makeText(app, "gezeichnet", Toast.LENGTH_SHORT).show();
+	//	Toast.makeText(app, "gezeichnet", Toast.LENGTH_SHORT).show();
 	}
 	
 	public Punktekarte(Drawable defaultMarker, Activity activity, Location location, int umkreis, int typ)
@@ -122,7 +140,11 @@ public class Punktekarte extends ItemizedOverlay
 	@Override 
     public void draw(Canvas canvas, MapView mapView, boolean shadow) 
     { 
-        if(!shadow) 
+		if(zoomlevel!=((Mainscreen)activity).mapView.getZoomLevel())
+		{zoomlevel=((Mainscreen)activity).mapView.getZoomLevel();
+		zeichnen(((Mainscreen)activity).typ,((Mainscreen)activity).helligkeit,((Mainscreen)activity).kontrast,((Mainscreen)activity).mapView);
+		}
+		if(!shadow) 
         { 
             super.draw(canvas, mapView, false); 
         } 

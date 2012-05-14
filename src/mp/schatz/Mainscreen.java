@@ -28,8 +28,12 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.ToggleButton;
+import android.widget.ZoomButtonsController.OnZoomListener;
 
 public class Mainscreen extends MapActivity implements LocationListener
 {
@@ -47,9 +51,10 @@ public class Mainscreen extends MapActivity implements LocationListener
     Button kontrastMinus;
     Button helligkeitPlus;
     Button helligkeitMinus;
+    ToggleButton messungAnAus;
     double helligkeit=0;
     double kontrast=90;
-    Intent serviceIntent;
+   // Intent serviceIntent;
     long lastsignal;
     App app;
     Location lastLocation=new Location("GPS");
@@ -83,13 +88,7 @@ public class Mainscreen extends MapActivity implements LocationListener
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         app=(App)getApplication();
-		if(app.serviceGestartet==false)
-		{
-			Log.d("Service","starten");
-		serviceIntent = new Intent(this, MessService.class);
-		startService(serviceIntent);
-		app.serviceGestartet=true;
-		}
+
         geoMagneticField= new GeomagneticField(49, (float) 8.7, 130, System.currentTimeMillis());
        
     	Drawable zielIcon = this.getResources().getDrawable(R.drawable.ic_launcher);
@@ -99,15 +98,41 @@ public class Mainscreen extends MapActivity implements LocationListener
 		mapView.displayZoomControls(true);
 		mapOverlays = mapView.getOverlays();
 	    mapOverlays.add(karte);
-        MyLocationOverlay myLocation=new MyLocationOverlay(getApplicationContext(), mapView);
-        myLocation.enableMyLocation();
+        //MyLocationOverlay myLocation=new MyLocationOverlay(getApplicationContext(), mapView);
+        //myLocation.enableMyLocation();
         //mapOverlays.add(myLocation);
-  
         
         //locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
        //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
        //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
- 
+	    messungAnAus =(ToggleButton) findViewById(R.id.toggleButton1);
+       messungAnAus.setOnCheckedChangeListener(new OnCheckedChangeListener(){
+
+		public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
+			if(arg1==true)
+			{
+				if(app.serviceGestartet==false)
+				{
+					Log.d("Service","starten");
+
+				startService(app.serviceIntent);
+				app.serviceGestartet=true;
+				}
+			}
+			
+			if(arg1==false)
+			{
+				if(app.serviceGestartet==true)
+				{
+					Log.d("Service","stoppen");
+
+				stopService(app.serviceIntent);
+				app.serviceGestartet=false;
+				}
+			}
+		}
+    	   
+       });
        Button button=(Button) findViewById(R.id.button);
        button.setOnClickListener(
     	         new View.OnClickListener() {
@@ -391,7 +416,11 @@ protected boolean isRouteDisplayed() {
 	// TODO Auto-generated method stub
 	return false;
 }
+
+
+
     
+
 
    
 
