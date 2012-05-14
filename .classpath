@@ -4,5 +4,18 @@
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
+	<classpathentry kind="lib" path="/Users/Peter/Projekte/android/platforms/android-15/android.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/Users/Peter/Projekte/android/docs/reference"/>
+		</attributes>
+		<accessrules>
+			<accessrule kind="nonaccessible" pattern="com/android/internal/**"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/Peter/Projekte/android/add-ons/addon-google_apis-google_inc_-15/libs/maps.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/Users/Peter/Projekte/android/add-ons/addon-google_apis-google_inc_-15/docs/reference"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
